@@ -87,7 +87,7 @@ key press ─▶ ┼────┼──── AM        ─────┼─�
 
 ## Try it
 
-**Live demo:** [your-username.github.io/probe-synth](https://your-username.github.io/probe-synth) <!-- replace with your real link -->
+**Live demo:** [[your-username.github.io/probe-synth](https://your-username.github.io/probe-synth) <!-- replace with your real link -->](https://mariaareadne1.github.io/webaudio-synth/)
 
 **Run locally:**
 
