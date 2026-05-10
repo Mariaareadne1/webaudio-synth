@@ -1,4 +1,4 @@
-# PROBE
+# TONUS
 
 **A hybrid web audio synthesizer with a built-in harmony engine.** Four synthesis methods crossfaded in real time, plus a Nopia-inspired chord generator that turns the lower octave into a tonal-harmony machine. Built with the Web Audio API. Zero dependencies, no samples, no build step.
 
@@ -92,8 +92,8 @@ key press ─▶ ┼────┼──── AM        ─────┼─�
 **Run locally:**
 
 ```bash
-git clone https://github.com/your-username/probe-synth.git
-cd probe-synth
+git clone https://github.com/your-username/Tonus-synth.git
+cd Tonus-synth
 # Any static server will do:
 python3 -m http.server 8000
 # or: npx serve .
