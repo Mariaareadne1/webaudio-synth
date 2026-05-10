@@ -1,0 +1,974 @@
+/* ============================================================
+   PROBE · model 01 — stylesheet
+   Aesthetic: scientific instrument panel. Phosphor green on
+   near-black, amber and magenta accents, tick-marked sliders,
+   monospaced labels in the typographic register of lab gear.
+   ============================================================ */
+
+:root {
+  --bg-0:        #0a0b09;   /* page */
+  --bg-1:        #111310;   /* panel face */
+  --bg-2:        #181a16;   /* recessed */
+  --bg-3:        #1f221d;   /* track */
+  --line:        #2a2e26;
+  --line-2:      #3a4036;
+
+  --ink:         #d8dcc8;
+  --ink-dim:     #8a8e7c;
+  --ink-faint:   #4d5247;
+
+  --phosphor:    #7fff8c;   /* signal-on */
+  --phosphor-dim:#3a6a3f;
+  --amber:       #ffb547;   /* warning / live values */
+  --magenta:     #ff3d8b;   /* primary accent / active state */
+  --cyan:        #5be0ff;
+
+  --rec-red:     #ff3a3a;
+
+  --font-mono:    'Space Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+  --font-display: 'Instrument Serif', 'Times New Roman', serif;
+
+  --border:      1px solid var(--line);
+  --border-2:    1px solid var(--line-2);
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  background: var(--bg-0);
+  color: var(--ink);
+  font-family: var(--font-mono);
+  font-size: 13px;
+  line-height: 1.45;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  letter-spacing: 0.01em;
+}
+
+body {
+  min-height: 100vh;
+  /* Subtle vignette + scanline texture, like a phosphor display. */
+  background-image:
+    radial-gradient(ellipse at 50% 0%, rgba(127,255,140,0.03), transparent 60%),
+    repeating-linear-gradient(
+      0deg,
+      transparent 0px,
+      transparent 2px,
+      rgba(255,255,255,0.012) 2px,
+      rgba(255,255,255,0.012) 3px
+    );
+}
+
+/* ============================================================
+   TOP BAR
+   ============================================================ */
+
+.bar {
+  display: grid;
+  grid-template-columns: 1.5fr 1fr 1fr;
+  align-items: stretch;
+  border-bottom: var(--border-2);
+  background: var(--bg-1);
+}
+
+.bar-cell {
+  padding: 18px 28px;
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  border-right: var(--border-2);
+}
+.bar-cell:last-child { border-right: none; justify-content: flex-end; }
+.stamp-cell { justify-content: center; gap: 36px; }
+
+.brand {
+  font-family: var(--font-display);
+  font-size: 44px;
+  line-height: 0.9;
+  color: var(--ink);
+  letter-spacing: -0.02em;
+}
+
+.brand-sub {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--ink-dim);
+  margin-left: 4px;
+  border-left: 1px solid var(--line-2);
+  padding-left: 14px;
+}
+
+.stamp {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  align-items: flex-start;
+}
+.stamp-line {
+  font-size: 9px;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+}
+.stamp-val {
+  font-family: var(--font-mono);
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: var(--ink);
+}
+.stamp-val.phosphor {
+  color: var(--phosphor);
+  text-shadow: 0 0 6px rgba(127,255,140,0.55);
+}
+
+/* Buttons */
+.ctl-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 11px 18px;
+  background: var(--bg-2);
+  border: var(--border-2);
+  color: var(--ink);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: transform 60ms ease, background 120ms ease, color 120ms ease, border-color 120ms ease;
+}
+.ctl-btn:hover     { background: #21251d; }
+.ctl-btn:active    { transform: translateY(1px); }
+
+.power-btn .power-dot,
+.rec-btn .rec-dot {
+  width: 9px; height: 9px;
+  border-radius: 50%;
+  background: #444;
+  box-shadow: inset 0 0 0 1px rgba(0,0,0,0.6);
+  transition: background 200ms ease, box-shadow 200ms ease;
+}
+.power-btn.is-on {
+  border-color: var(--phosphor);
+  color: var(--phosphor);
+}
+.power-btn.is-on .power-dot {
+  background: var(--phosphor);
+  box-shadow: 0 0 8px var(--phosphor), inset 0 0 0 1px rgba(0,0,0,0.4);
+  animation: heartbeat 1.4s ease-in-out infinite;
+}
+.rec-btn.is-rec {
+  border-color: var(--rec-red);
+  color: var(--rec-red);
+}
+.rec-btn.is-rec .rec-dot {
+  background: var(--rec-red);
+  box-shadow: 0 0 10px var(--rec-red);
+  animation: heartbeat 0.9s ease-in-out infinite;
+}
+@keyframes heartbeat {
+  0%, 100% { opacity: 1; }
+  50%      { opacity: 0.45; }
+}
+
+/* ============================================================
+   MAIN GRID
+   ============================================================ */
+
+.grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  grid-template-rows: auto auto;
+  grid-template-areas:
+    "mixer mod    viz"
+    "env   master viz";
+  gap: 0;
+}
+
+.panel {
+  background: var(--bg-1);
+  padding: 22px 26px 24px;
+  border-right: var(--border-2);
+  border-bottom: var(--border-2);
+  position: relative;
+}
+.panel-mixer  { grid-area: mixer;  }
+.panel-mod    { grid-area: mod;    }
+.panel-env    { grid-area: env;    }
+.panel-master { grid-area: master; }
+.panel-viz    {
+  grid-area: viz;
+  border-right: none;
+  background: var(--bg-1);
+}
+
+.panel:last-child,
+.panel-master,
+.panel-viz {
+  border-bottom: none;
+}
+
+.panel-head {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  padding-bottom: 10px;
+  margin-bottom: 18px;
+  border-bottom: 1px solid var(--line);
+}
+.panel-num {
+  font-family: var(--font-display);
+  font-size: 22px;
+  color: var(--magenta);
+  font-style: italic;
+  line-height: 1;
+}
+.panel-title {
+  font-family: var(--font-display);
+  font-size: 26px;
+  font-weight: 400;
+  margin: 0;
+  letter-spacing: -0.01em;
+  color: var(--ink);
+}
+.panel-tag {
+  margin-left: auto;
+  font-size: 9px;
+  letter-spacing: 0.25em;
+  color: var(--ink-faint);
+}
+
+/* ============================================================
+   CONTROLS — sliders, labels, selects
+   ============================================================ */
+
+.ctl {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.ctl-label {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  font-size: 10px;
+  letter-spacing: 0.18em;
+  color: var(--ink-dim);
+  text-transform: uppercase;
+}
+.ctl-label output {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0;
+  text-transform: none;
+  color: var(--phosphor);
+  text-shadow: 0 0 6px rgba(127,255,140,0.4);
+}
+
+/* Horizontal sliders */
+input[type="range"] {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 22px;
+  background: transparent;
+  cursor: pointer;
+  margin: 0;
+}
+input[type="range"]::-webkit-slider-runnable-track {
+  height: 4px;
+  background:
+    linear-gradient(var(--bg-3), var(--bg-3)) padding-box,
+    repeating-linear-gradient(90deg, var(--line) 0 1px, transparent 1px 10%) border-box;
+  border: var(--border);
+}
+input[type="range"]::-moz-range-track {
+  height: 4px;
+  background: var(--bg-3);
+  border: var(--border);
+}
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 14px;
+  height: 22px;
+  background: var(--ink);
+  border: 1px solid var(--bg-0);
+  margin-top: -10px;
+  cursor: grab;
+  box-shadow: 0 0 0 1px var(--line-2);
+  transition: background 100ms ease;
+}
+input[type="range"]::-moz-range-thumb {
+  width: 14px;
+  height: 22px;
+  background: var(--ink);
+  border: 1px solid var(--bg-0);
+  cursor: grab;
+  border-radius: 0;
+  box-shadow: 0 0 0 1px var(--line-2);
+}
+input[type="range"]:hover::-webkit-slider-thumb   { background: var(--phosphor); }
+input[type="range"]:hover::-moz-range-thumb       { background: var(--phosphor); }
+input[type="range"]:active::-webkit-slider-thumb  { background: var(--magenta); }
+input[type="range"]:active::-moz-range-thumb      { background: var(--magenta); }
+input[type="range"]:focus                         { outline: none; }
+input[type="range"]:focus::-webkit-slider-thumb   { box-shadow: 0 0 0 1px var(--phosphor), 0 0 8px var(--phosphor); }
+
+/* Select boxes */
+.sel {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  background: var(--bg-2);
+  color: var(--ink);
+  border: var(--border-2);
+  padding: 7px 30px 7px 10px;
+  appearance: none;
+  -webkit-appearance: none;
+  background-image:
+    linear-gradient(45deg, transparent 50%, var(--phosphor) 50%),
+    linear-gradient(135deg, var(--phosphor) 50%, transparent 50%);
+  background-position:
+    calc(100% - 14px) calc(50% - 2px),
+    calc(100% - 9px) calc(50% - 2px);
+  background-size: 5px 5px;
+  background-repeat: no-repeat;
+  cursor: pointer;
+  text-transform: lowercase;
+  letter-spacing: 0.04em;
+}
+.sel:focus { outline: 1px solid var(--phosphor); outline-offset: 0; }
+
+/* Generic row helpers */
+.row-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px 22px;
+  margin-bottom: 14px;
+}
+.row-split {
+  height: 1px;
+  background: var(--line);
+  margin: 18px 0 18px;
+}
+
+/* ============================================================
+   01 · MIXER — vertical faders
+   ============================================================ */
+
+.mixer-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 14px;
+  margin-bottom: 4px;
+}
+
+.mixer-track {
+  background: var(--bg-2);
+  border: var(--border);
+  padding: 14px 10px 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  position: relative;
+}
+.mixer-track::before {
+  /* tick column at the side */
+  content: "";
+  position: absolute;
+  left: 8px; top: 56px; bottom: 36px;
+  width: 5px;
+  background-image: repeating-linear-gradient(
+    180deg,
+    var(--line-2) 0 1px,
+    transparent 1px 14px
+  );
+  opacity: 0.55;
+}
+.track-head {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 8px;
+}
+.track-name {
+  font-size: 9.5px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--ink-dim);
+}
+.track-val {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--phosphor);
+  text-shadow: 0 0 5px rgba(127,255,140,0.4);
+}
+
+/* Vertical fader: rotate a horizontal range and let it occupy a tall column. */
+input.vert {
+  -webkit-appearance: slider-vertical;
+  appearance: slider-vertical;
+  writing-mode: vertical-lr;
+  /* Fallback styling for browsers that don't honour the above: rotate. */
+  transform: rotate(180deg);  /* so that "up" = louder visually */
+  width: 32px;
+  height: 130px;
+}
+/* Webkit Safari/Chrome path */
+input.vert::-webkit-slider-runnable-track {
+  width: 4px;
+  height: 130px;
+  background: var(--bg-3);
+  border: var(--border);
+}
+input.vert::-webkit-slider-thumb {
+  width: 22px;
+  height: 12px;
+  margin-top: 0;
+  margin-left: -9px;
+}
+
+.track-foot {
+  margin-top: 6px;
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: 18px;
+  color: var(--magenta);
+  letter-spacing: 0.05em;
+}
+
+/* ============================================================
+   02 · MODULATION
+   ============================================================ */
+
+.mod-group {
+  padding: 12px 14px 12px;
+  border: var(--border);
+  background: var(--bg-2);
+  margin-bottom: 12px;
+}
+.mod-group:last-child { margin-bottom: 0; }
+
+.mod-group-head {
+  font-size: 10px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--ink-dim);
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.mod-letter {
+  display: inline-block;
+  min-width: 22px;
+  padding: 2px 5px;
+  text-align: center;
+  background: var(--magenta);
+  color: var(--bg-0);
+  font-weight: 700;
+  letter-spacing: 0.04em;
+}
+
+/* ============================================================
+   03 · ENVELOPE + LFO
+   ============================================================ */
+
+.env-block-label {
+  font-size: 9.5px;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--amber);
+  margin-bottom: 10px;
+  border-bottom: 1px dashed var(--line-2);
+  padding-bottom: 4px;
+}
+
+.adsr-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr;
+  gap: 12px 18px;
+}
+
+/* ============================================================
+   04 · FILTER + MASTER
+   ============================================================ */
+
+.hint-block {
+  margin-top: 18px;
+  padding: 8px 10px;
+  border: 1px dashed var(--line-2);
+  font-size: 10px;
+  letter-spacing: 0.04em;
+  color: var(--ink-dim);
+}
+.hint-block .kbd {
+  display: inline-block;
+  padding: 1px 4px;
+  background: var(--bg-2);
+  border: 1px solid var(--line-2);
+  margin-right: 4px;
+  color: var(--amber);
+}
+
+/* ============================================================
+   05 · VISUALIZERS
+   ============================================================ */
+
+.viz-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.viz-card {
+  background: var(--bg-2);
+  border: var(--border);
+  padding: 10px 12px 12px;
+}
+.viz-label {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 8px;
+  font-size: 10px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--ink-dim);
+}
+.viz-label > span:first-child { color: var(--phosphor); }
+.viz-sub { color: var(--ink-faint); letter-spacing: 0.12em; }
+canvas#scope, canvas#spectrum {
+  display: block;
+  width: 100%;
+  height: 150px;
+  background: #060807;
+  border: 1px solid #1c1f1a;
+}
+
+/* ============================================================
+   KEYBOARD
+   ============================================================ */
+
+.kb-section {
+  background: var(--bg-1);
+  border-top: var(--border-2);
+  padding: 16px 28px 22px;
+}
+
+.kb-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 18px;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+}
+.kb-label {
+  font-size: 10px;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--amber);
+}
+.kb-hint {
+  font-size: 10.5px;
+  color: var(--ink-dim);
+  letter-spacing: 0.04em;
+}
+kbd {
+  display: inline-block;
+  padding: 1px 5px;
+  margin: 0 1px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--ink);
+  background: var(--bg-2);
+  border: 1px solid var(--line-2);
+}
+
+.keyboard {
+  position: relative;
+  display: flex;
+  height: 160px;
+  user-select: none;
+}
+
+.key {
+  position: relative;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  padding-bottom: 10px;
+  transition: background 80ms ease, box-shadow 80ms ease, transform 60ms ease;
+}
+
+.key-white {
+  flex: 1 0 0;
+  background: linear-gradient(180deg, #d8dcc8 0%, #bcc0ac 100%);
+  border: 1px solid #06080a;
+  border-right-width: 0;
+  color: #0a0b09;
+  z-index: 1;
+}
+.key-white:last-child { border-right-width: 1px; }
+
+.key-black {
+  background: linear-gradient(180deg, #1a1c17 0%, #06080a 100%);
+  color: var(--ink);
+  width: 5%;
+  height: 64%;
+  margin-left: -2.5%;
+  margin-right: -2.5%;
+  z-index: 2;
+  border: 1px solid #06080a;
+  border-top-width: 4px;
+  box-shadow: 0 4px 0 rgba(0,0,0,0.5);
+}
+
+.key-note {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: 13px;
+  opacity: 0.4;
+  margin-bottom: 2px;
+}
+.key-label {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+}
+.key-black .key-note  { color: var(--ink-dim); }
+.key-black .key-label { color: var(--phosphor); }
+
+.key.is-on {
+  background: var(--magenta) !important;
+  color: var(--bg-0);
+  box-shadow:
+    0 0 14px rgba(255,61,139,0.55),
+    0 0 30px rgba(255,61,139,0.25);
+  transform: translateY(1px);
+}
+.key.is-on .key-note,
+.key.is-on .key-label { color: var(--bg-0); opacity: 0.95; }
+
+/* Chord-member highlight: softer phosphor glow.
+   Visually weaker than .is-on so it reads as "this key is part of the
+   chord you're hearing" rather than "you pressed this." */
+.key.is-chord {
+  background: linear-gradient(180deg,
+    rgba(127,255,140,0.92) 0%,
+    rgba(127,255,140,0.78) 100%) !important;
+  color: var(--bg-0);
+  box-shadow:
+    0 0 12px rgba(127,255,140,0.45),
+    0 0 24px rgba(127,255,140,0.18);
+}
+.key-black.is-chord {
+  background: linear-gradient(180deg,
+    rgba(127,255,140,0.85) 0%,
+    rgba(60,140,80,0.95) 100%) !important;
+}
+.key.is-chord .key-note,
+.key.is-chord .key-label { color: var(--bg-0); opacity: 0.92; }
+/* If a key happens to be BOTH the trigger and a chord member somehow,
+   the trigger state wins by virtue of class order. */
+
+/* ============================================================
+   HARMONY (Nopia-inspired panel)
+   ============================================================ */
+
+.harmony {
+  background:
+    linear-gradient(180deg, rgba(255,61,139,0.04) 0%, transparent 100%),
+    var(--bg-1);
+  padding: 22px 28px 26px;
+  border-top: var(--border-2);
+  position: relative;
+}
+.harmony::before {
+  /* a tiny scanline accent at the top to mark this as a distinct module */
+  content: "";
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background:
+    linear-gradient(90deg,
+      var(--magenta) 0%,
+      var(--magenta) 18%,
+      transparent 18%,
+      transparent 22%,
+      var(--phosphor) 22%,
+      var(--phosphor) 28%,
+      transparent 28%,
+      transparent 100%);
+}
+
+.harmony-head {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  margin-bottom: 18px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--line);
+}
+
+.harmony-grid {
+  display: grid;
+  grid-template-columns: 1.5fr 0.7fr 0.9fr 1.3fr;
+  gap: 22px;
+  align-items: start;
+}
+
+.harm-block {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 12px 14px 14px;
+  background: var(--bg-2);
+  border: var(--border);
+  min-height: 124px;
+}
+
+.harm-label {
+  font-size: 9.5px;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--amber);
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+}
+.harm-readout {
+  font-family: var(--font-display);
+  font-size: 17px;
+  font-style: italic;
+  color: var(--phosphor);
+  text-shadow: 0 0 8px rgba(127,255,140,0.4);
+  margin-top: auto;
+}
+.harm-readout-inline {
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0;
+  text-transform: lowercase;
+  color: var(--phosphor);
+  text-shadow: 0 0 5px rgba(127,255,140,0.4);
+}
+.harm-sub {
+  font-size: 10px;
+  color: var(--ink-faint);
+  letter-spacing: 0.04em;
+  margin-top: auto;
+  line-height: 1.5;
+}
+
+/* ---- Tonal selector row ---- */
+.tonal-row {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  gap: 2px;
+}
+.tonal-btn {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 700;
+  padding: 10px 0;
+  background: var(--bg-3);
+  color: var(--ink);
+  border: var(--border);
+  cursor: pointer;
+  letter-spacing: 0.02em;
+  transition: background 100ms ease, color 100ms ease, box-shadow 100ms ease;
+}
+.tonal-btn.tonal-bk {
+  background: #0a0c08;
+  color: var(--ink-dim);
+}
+.tonal-btn:hover {
+  background: #2a2e26;
+  color: var(--phosphor);
+}
+.tonal-btn.is-on {
+  background: var(--magenta);
+  color: var(--bg-0);
+  box-shadow: 0 0 14px rgba(255,61,139,0.5), inset 0 0 0 1px rgba(0,0,0,0.4);
+}
+
+/* ---- Sliding toggle switch ---- */
+.toggle {
+  display: inline-block;
+  position: relative;
+  cursor: pointer;
+}
+.toggle input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+.toggle-track {
+  display: inline-flex;
+  width: 78px;
+  height: 28px;
+  background: var(--bg-3);
+  border: var(--border-2);
+  position: relative;
+  align-items: center;
+  font-size: 9.5px;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  transition: background 160ms ease, border-color 160ms ease;
+}
+.toggle-sm .toggle-track { width: 66px; height: 24px; }
+
+.toggle-thumb {
+  position: absolute;
+  width: 26px;
+  height: calc(100% - 4px);
+  top: 2px;
+  left: 2px;
+  background: var(--ink-dim);
+  transition: transform 160ms ease, background 160ms ease;
+  z-index: 1;
+}
+.toggle-sm .toggle-thumb { width: 22px; }
+
+.toggle-on, .toggle-off {
+  flex: 1;
+  text-align: center;
+  z-index: 0;
+  color: var(--ink-faint);
+  transition: color 160ms ease;
+}
+.toggle-on  { color: var(--ink-faint); }
+.toggle-off { color: var(--ink); }
+
+.toggle input:checked + .toggle-track {
+  background: rgba(127,255,140,0.08);
+  border-color: var(--phosphor);
+}
+.toggle input:checked + .toggle-track .toggle-thumb {
+  transform: translateX(48px);
+  background: var(--phosphor);
+  box-shadow: 0 0 8px var(--phosphor);
+}
+.toggle-sm input:checked + .toggle-track .toggle-thumb {
+  transform: translateX(40px);
+}
+.toggle input:checked + .toggle-track .toggle-on  { color: var(--phosphor); }
+.toggle input:checked + .toggle-track .toggle-off { color: var(--ink-faint); }
+
+/* ---- Complexity ticks ---- */
+.harm-ticks {
+  display: flex;
+  justify-content: space-between;
+  font-size: 9px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+  margin-top: 2px;
+  padding: 0 2px;
+}
+
+/* ---- Mod row: bass + arp side by side ---- */
+.harm-mod-row {
+  flex-direction: row;
+  gap: 18px;
+  align-items: stretch;
+}
+.harm-mod-col {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding-right: 14px;
+  border-right: 1px dashed var(--line-2);
+}
+.harm-mod-col:last-child { border-right: none; padding-right: 0; }
+.arp-rate-ctl { margin-top: 6px; }
+
+/* ---- Chord label readout (above keyboard) ---- */
+.chord-label-wrap {
+  font-size: 10px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+  display: inline-flex;
+  align-items: baseline;
+  gap: 10px;
+}
+.chord-label {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: 22px;
+  letter-spacing: 0;
+  text-transform: none;
+  color: var(--magenta);
+  text-shadow: 0 0 10px rgba(255,61,139,0.45);
+  min-width: 110px;
+  display: inline-block;
+}
+
+/* ============================================================
+   FOOTER
+   ============================================================ */
+
+.footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 28px 16px;
+  border-top: var(--border-2);
+  background: var(--bg-1);
+  font-size: 9.5px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+}
+.footer-mid { color: var(--phosphor-dim); }
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+
+@media (max-width: 1100px) {
+  .grid {
+    grid-template-columns: 1fr 1fr;
+    grid-template-areas:
+      "mixer  mod"
+      "env    master"
+      "viz    viz";
+  }
+  .panel-viz   { border-right: none; }
+  .panel-mixer, .panel-env { border-right: var(--border-2); }
+}
+
+@media (max-width: 720px) {
+  .bar {
+    grid-template-columns: 1fr;
+  }
+  .bar-cell { border-right: none; border-bottom: var(--border-2); justify-content: flex-start !important; }
+  .stamp-cell { gap: 24px; }
+  .grid {
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      "mixer"
+      "mod"
+      "env"
+      "master"
+      "viz";
+  }
+  .panel { border-right: none; }
+  .brand { font-size: 36px; }
+  .adsr-grid { grid-template-columns: 1fr 1fr; }
+}

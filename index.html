@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PROBE · a hybrid web audio synthesizer</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- =================== HEADER =================== -->
+  <header class="bar bar-top">
+    <div class="bar-cell brand-cell">
+      <div class="brand">probe.</div>
+      <div class="brand-sub">model 01 · hybrid synthesis instrument</div>
+    </div>
+    <div class="bar-cell stamp-cell">
+      <div class="stamp">
+        <span class="stamp-line">SER №</span>
+        <span class="stamp-val" id="serial">0000·0000</span>
+      </div>
+      <div class="stamp">
+        <span class="stamp-line">POLY</span>
+        <span class="stamp-val phosphor" id="polyCount">00</span>
+      </div>
+    </div>
+    <div class="bar-cell action-cell">
+      <button id="recordBtn" class="ctl-btn rec-btn" type="button">
+        <span class="rec-dot"></span>
+        <span class="btn-label">RECORD</span>
+      </button>
+      <button id="startBtn" class="ctl-btn power-btn" type="button">
+        <span class="power-dot"></span>
+        <span class="btn-label">ENGAGE</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- =================== MAIN GRID =================== -->
+  <main class="grid">
+
+    <!-- ───── 01 · MIXER ───── -->
+    <section class="panel panel-mixer">
+      <div class="panel-head">
+        <span class="panel-num">01</span>
+        <h2 class="panel-title">mixer</h2>
+        <span class="panel-tag">SIGNAL · BLEND</span>
+      </div>
+
+      <div class="mixer-row">
+        <div class="mixer-track">
+          <div class="track-head">
+            <span class="track-name">additive</span>
+            <output for="mixAdd" class="track-val">0.50</output>
+          </div>
+          <input id="mixAdd" type="range" min="0" max="1" step="0.01" value="0.50" class="vert" />
+          <div class="track-foot">A</div>
+        </div>
+        <div class="mixer-track">
+          <div class="track-head">
+            <span class="track-name">amplitude mod</span>
+            <output for="mixAM" class="track-val">0.00</output>
+          </div>
+          <input id="mixAM" type="range" min="0" max="1" step="0.01" value="0.00" class="vert" />
+          <div class="track-foot">AM</div>
+        </div>
+        <div class="mixer-track">
+          <div class="track-head">
+            <span class="track-name">frequency mod</span>
+            <output for="mixFM" class="track-val">0.50</output>
+          </div>
+          <input id="mixFM" type="range" min="0" max="1" step="0.01" value="0.50" class="vert" />
+          <div class="track-foot">FM</div>
+        </div>
+      </div>
+
+      <div class="row-split"></div>
+
+      <div class="row-2">
+        <div class="ctl">
+          <label class="ctl-label" for="waveform">CARRIER WAVE</label>
+          <select id="waveform" class="sel">
+            <option value="sine">sine</option>
+            <option value="triangle" selected>triangle</option>
+            <option value="sawtooth">sawtooth</option>
+            <option value="square">square</option>
+          </select>
+        </div>
+        <div class="ctl">
+          <label class="ctl-label" for="preset">PRESET</label>
+          <select id="preset" class="sel">
+            <option value="custom">— custom —</option>
+            <option value="daftBass">daft bass</option>
+            <option value="glassBell">glass bell</option>
+            <option value="discoPad">disco pad</option>
+            <option value="robotLead">robot lead</option>
+            <option value="pluck">pluck</option>
+          </select>
+        </div>
+      </div>
+    </section>
+
+    <!-- ───── 02 · MODULATION PARAMS ───── -->
+    <section class="panel panel-mod">
+      <div class="panel-head">
+        <span class="panel-num">02</span>
+        <h2 class="panel-title">modulation</h2>
+        <span class="panel-tag">ENGINE PARAMS</span>
+      </div>
+
+      <div class="mod-group">
+        <div class="mod-group-head">
+          <span class="mod-letter">A</span> additive partials
+        </div>
+        <div class="row-2">
+          <div class="ctl">
+            <label class="ctl-label" for="addPartials">COUNT <output for="addPartials">5</output></label>
+            <input id="addPartials" type="range" min="1" max="10" step="1" value="5" />
+          </div>
+          <div class="ctl">
+            <label class="ctl-label" for="addFalloff">FALLOFF <output for="addFalloff">0.60</output></label>
+            <input id="addFalloff" type="range" min="0.1" max="1" step="0.01" value="0.60" />
+          </div>
+        </div>
+      </div>
+
+      <div class="mod-group">
+        <div class="mod-group-head">
+          <span class="mod-letter">AM</span> amplitude modulator
+        </div>
+        <div class="row-2">
+          <div class="ctl">
+            <label class="ctl-label" for="amFreq">RATE <output for="amFreq">6.0 Hz</output></label>
+            <input id="amFreq" type="range" min="0.1" max="80" step="0.1" value="6.0" />
+          </div>
+          <div class="ctl">
+            <label class="ctl-label" for="amDepth">DEPTH <output for="amDepth">0.60</output></label>
+            <input id="amDepth" type="range" min="0" max="1" step="0.01" value="0.60" />
+          </div>
+        </div>
+      </div>
+
+      <div class="mod-group">
+        <div class="mod-group-head">
+          <span class="mod-letter">FM</span> frequency modulator
+        </div>
+        <div class="row-2">
+          <div class="ctl">
+            <label class="ctl-label" for="fmRatio">RATIO <output for="fmRatio">2.00</output></label>
+            <input id="fmRatio" type="range" min="0.25" max="8" step="0.01" value="2.00" />
+          </div>
+          <div class="ctl">
+            <label class="ctl-label" for="fmIndex">INDEX <output for="fmIndex">200</output></label>
+            <input id="fmIndex" type="range" min="0" max="1500" step="1" value="200" />
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ───── 03 · ENVELOPE + LFO ───── -->
+    <section class="panel panel-env">
+      <div class="panel-head">
+        <span class="panel-num">03</span>
+        <h2 class="panel-title">envelope &amp; lfo</h2>
+        <span class="panel-tag">DYNAMICS</span>
+      </div>
+
+      <div class="env-block-label">ADSR · amplitude envelope</div>
+      <div class="adsr-grid">
+        <div class="ctl">
+          <label class="ctl-label" for="attack">A <output for="attack">20 ms</output></label>
+          <input id="attack" type="range" min="0.001" max="2" step="0.001" value="0.02" />
+        </div>
+        <div class="ctl">
+          <label class="ctl-label" for="decay">D <output for="decay">80 ms</output></label>
+          <input id="decay" type="range" min="0.001" max="2" step="0.001" value="0.08" />
+        </div>
+        <div class="ctl">
+          <label class="ctl-label" for="sustain">S <output for="sustain">0.60</output></label>
+          <input id="sustain" type="range" min="0" max="1" step="0.01" value="0.60" />
+        </div>
+        <div class="ctl">
+          <label class="ctl-label" for="release">R <output for="release">150 ms</output></label>
+          <input id="release" type="range" min="0.001" max="4" step="0.001" value="0.15" />
+        </div>
+      </div>
+
+      <div class="row-split"></div>
+
+      <div class="env-block-label">LFO → filter cutoff</div>
+      <div class="row-2">
+        <div class="ctl">
+          <label class="ctl-label" for="lfoRate">RATE <output for="lfoRate">2.0 Hz</output></label>
+          <input id="lfoRate" type="range" min="0.1" max="20" step="0.1" value="2.0" />
+        </div>
+        <div class="ctl">
+          <label class="ctl-label" for="lfoDepth">DEPTH <output for="lfoDepth">600</output></label>
+          <input id="lfoDepth" type="range" min="0" max="3000" step="10" value="600" />
+        </div>
+      </div>
+    </section>
+
+    <!-- ───── 04 · FILTER + MASTER ───── -->
+    <section class="panel panel-master">
+      <div class="panel-head">
+        <span class="panel-num">04</span>
+        <h2 class="panel-title">filter &amp; output</h2>
+        <span class="panel-tag">MASTER STAGE</span>
+      </div>
+
+      <div class="env-block-label">low-pass · 12 dB/oct</div>
+      <div class="row-2">
+        <div class="ctl">
+          <label class="ctl-label" for="filterCutoff">CUTOFF <output for="filterCutoff">2000 Hz</output></label>
+          <input id="filterCutoff" type="range" min="80" max="12000" step="10" value="2000" />
+        </div>
+        <div class="ctl">
+          <label class="ctl-label" for="filterQ">RES <output for="filterQ">0.70</output></label>
+          <input id="filterQ" type="range" min="0.1" max="18" step="0.1" value="0.7" />
+        </div>
+      </div>
+
+      <div class="row-split"></div>
+
+      <div class="env-block-label">output</div>
+      <div class="ctl">
+        <label class="ctl-label" for="volume">MASTER VOLUME <output for="volume">0.30</output></label>
+        <input id="volume" type="range" min="0" max="1" step="0.01" value="0.30" />
+      </div>
+
+      <div class="hint-block">
+        <span class="kbd">▲</span> filter pluck envelope auto-fires each note ·
+        clip-safe normalised mix
+      </div>
+    </section>
+
+    <!-- ───── 05 · VISUALIZERS ───── -->
+    <section class="panel panel-viz">
+      <div class="panel-head">
+        <span class="panel-num">05</span>
+        <h2 class="panel-title">analysis</h2>
+        <span class="panel-tag">WAVE · SPECTRUM</span>
+      </div>
+
+      <div class="viz-stack">
+        <div class="viz-card">
+          <div class="viz-label">
+            <span>OSCILLOSCOPE</span>
+            <span class="viz-sub">one trace per active voice</span>
+          </div>
+          <canvas id="scope"></canvas>
+        </div>
+        <div class="viz-card">
+          <div class="viz-label">
+            <span>SPECTRUM</span>
+            <span class="viz-sub">post-master · log-scaled · 64 bins</span>
+          </div>
+          <canvas id="spectrum"></canvas>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- =================== HARMONY (Nopia-inspired) =================== -->
+  <section class="harmony">
+    <div class="harmony-head">
+      <span class="panel-num">06</span>
+      <h2 class="panel-title">harmony</h2>
+      <span class="panel-tag">TONAL SELECTOR · CHORD GENERATOR</span>
+    </div>
+
+    <div class="harmony-grid">
+
+      <!-- Tonal selector: 12 chromatic root buttons -->
+      <div class="harm-block harm-tonal">
+        <div class="harm-label">KEY</div>
+        <div class="tonal-row" id="tonalSelector">
+          <!-- 12 buttons + a hidden range that holds the actual value -->
+          <input type="hidden" id="tonalRoot" value="0" />
+          <button class="tonal-btn"          data-val="0">C</button>
+          <button class="tonal-btn tonal-bk" data-val="1">C♯</button>
+          <button class="tonal-btn"          data-val="2">D</button>
+          <button class="tonal-btn tonal-bk" data-val="3">D♯</button>
+          <button class="tonal-btn"          data-val="4">E</button>
+          <button class="tonal-btn"          data-val="5">F</button>
+          <button class="tonal-btn tonal-bk" data-val="6">F♯</button>
+          <button class="tonal-btn"          data-val="7">G</button>
+          <button class="tonal-btn tonal-bk" data-val="8">G♯</button>
+          <button class="tonal-btn"          data-val="9">A</button>
+          <button class="tonal-btn tonal-bk" data-val="10">A♯</button>
+          <button class="tonal-btn"          data-val="11">B</button>
+        </div>
+        <output for="tonalRoot" class="harm-readout">C major</output>
+      </div>
+
+      <!-- Chord mode toggle -->
+      <div class="harm-block harm-mode">
+        <div class="harm-label">CHORD MODE</div>
+        <label class="toggle">
+          <input type="checkbox" id="chordMode" />
+          <span class="toggle-track">
+            <span class="toggle-thumb"></span>
+            <span class="toggle-on">ON</span>
+            <span class="toggle-off">OFF</span>
+          </span>
+        </label>
+        <div class="harm-sub">
+          lower octave plays chords ·<br>
+          upper octave stays mono
+        </div>
+      </div>
+
+      <!-- Complexity -->
+      <div class="harm-block harm-complexity">
+        <div class="harm-label">COMPLEXITY <output for="complexity" class="harm-readout-inline">triad</output></div>
+        <input type="range" id="complexity" min="0" max="2" step="1" value="0" />
+        <div class="harm-ticks">
+          <span>triad</span><span>7th</span><span>9th</span>
+        </div>
+      </div>
+
+      <!-- Bass / Arp toggles + arp rate -->
+      <div class="harm-block harm-mod-row">
+        <div class="harm-mod-col">
+          <div class="harm-label">BASS</div>
+          <label class="toggle toggle-sm">
+            <input type="checkbox" id="bassToggle" />
+            <span class="toggle-track">
+              <span class="toggle-thumb"></span>
+              <span class="toggle-on">ON</span>
+              <span class="toggle-off">OFF</span>
+            </span>
+          </label>
+          <div class="harm-sub">root one octave down</div>
+        </div>
+
+        <div class="harm-mod-col">
+          <div class="harm-label">ARPEGGIATOR</div>
+          <label class="toggle toggle-sm">
+            <input type="checkbox" id="arpToggle" />
+            <span class="toggle-track">
+              <span class="toggle-thumb"></span>
+              <span class="toggle-on">ON</span>
+              <span class="toggle-off">OFF</span>
+            </span>
+          </label>
+          <div class="ctl arp-rate-ctl">
+            <label class="ctl-label" for="arpRate">RATE <output for="arpRate">8.0 Hz</output></label>
+            <input id="arpRate" type="range" min="1" max="20" step="0.1" value="8.0" />
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- =================== KEYBOARD =================== -->
+  <section class="kb-section">
+    <div class="kb-head">
+      <span class="kb-label">MANUAL · 2 OCTAVES</span>
+      <span class="chord-label-wrap">
+        CHORD <span class="chord-label" id="chordLabel">—</span>
+      </span>
+      <span class="kb-hint">
+        click keys or type:
+        <kbd>Z</kbd><kbd>S</kbd><kbd>X</kbd><kbd>D</kbd><kbd>C</kbd><kbd>V</kbd>
+        <kbd>G</kbd><kbd>B</kbd><kbd>H</kbd><kbd>N</kbd><kbd>J</kbd><kbd>M</kbd>
+        <kbd>Q</kbd><kbd>2</kbd><kbd>W</kbd><kbd>3</kbd><kbd>E</kbd><kbd>R</kbd>
+        <kbd>5</kbd><kbd>T</kbd><kbd>6</kbd><kbd>Y</kbd><kbd>7</kbd><kbd>U</kbd>
+      </span>
+    </div>
+    <div id="keyboard" class="keyboard"></div>
+  </section>
+
+  <!-- =================== FOOTER =================== -->
+  <footer class="footer">
+    <span>BUILT WITH WEB AUDIO API · NO SAMPLES · ZERO DEPENDENCIES</span>
+    <span class="footer-mid">[ PROBE · MODEL 01 · 2026 ]</span>
+    <span>HEADPHONES RECOMMENDED</span>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>
