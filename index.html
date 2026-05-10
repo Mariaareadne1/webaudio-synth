@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>PROBE · a hybrid web audio synthesizer</title>
+  <title>TONUS · a hybrid web audio synthesizer</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
@@ -14,7 +14,7 @@
   <!-- =================== HEADER =================== -->
   <header class="bar bar-top">
     <div class="bar-cell brand-cell">
-      <div class="brand">probe.</div>
+      <div class="brand">tonus.</div>
       <div class="brand-sub">model 01 · hybrid synthesis instrument</div>
     </div>
     <div class="bar-cell stamp-cell">
@@ -365,10 +365,14 @@
       <span class="chord-label-wrap">
         CHORD <span class="chord-label" id="chordLabel">—</span>
       </span>
+      <span class="sustain-pill" id="sustainIndicator">
+        <span class="sustain-dot"></span> SUSTAIN
+      </span>
       <span class="kb-hint">
-        click keys or type:
+        type keys · hold <kbd>SPACE</kbd> to sustain · lower:
         <kbd>Z</kbd><kbd>S</kbd><kbd>X</kbd><kbd>D</kbd><kbd>C</kbd><kbd>V</kbd>
         <kbd>G</kbd><kbd>B</kbd><kbd>H</kbd><kbd>N</kbd><kbd>J</kbd><kbd>M</kbd>
+        upper:
         <kbd>Q</kbd><kbd>2</kbd><kbd>W</kbd><kbd>3</kbd><kbd>E</kbd><kbd>R</kbd>
         <kbd>5</kbd><kbd>T</kbd><kbd>6</kbd><kbd>Y</kbd><kbd>7</kbd><kbd>U</kbd>
       </span>
@@ -379,7 +383,7 @@
   <!-- =================== FOOTER =================== -->
   <footer class="footer">
     <span>BUILT WITH WEB AUDIO API · NO SAMPLES · ZERO DEPENDENCIES</span>
-    <span class="footer-mid">[ PROBE · MODEL 01 · 2026 ]</span>
+    <span class="footer-mid">[ TONUS · MODEL 01 · 2026 ]</span>
     <span>HEADPHONES RECOMMENDED</span>
   </footer>
 

@@ -1,5 +1,5 @@
 /* ============================================================
-   PROBE — a hybrid web audio synthesizer
+   TONUS — a hybrid web audio synthesizer
    Subtractive · Additive · AM · FM · crossfaded in real time
    Built on the Web Audio API. Zero dependencies.
    ============================================================ */
@@ -734,17 +734,73 @@ document.addEventListener("DOMContentLoaded", () => {
   }
   [ui.mixAdd, ui.mixAM, ui.mixFM].forEach(el => el.addEventListener("input", onMixChange));
 
-  /* ---------- 11. INPUT — KEYBOARD + ON-SCREEN KEYS ---------- */
+  /* ---------- 11. INPUT — KEYBOARD + ON-SCREEN KEYS ----------
+     SUSTAIN: holding SPACE acts like a piano sustain pedal — any key
+     you release while space is down stays sounding until space is
+     released (or that key is pressed again).
+  -------------------------------------------------------------- */
+
+  let sustainOn = false;          // is space currently held?
+  const sustainedKeys = new Set();// keys deferred from release while sustain is active
+
+  function setSustainIndicator(on) {
+    const ind = $("sustainIndicator");
+    if (ind) ind.classList.toggle("is-on", on);
+  }
 
   window.addEventListener("keydown", (e) => {
+    // Sustain pedal: spacebar.
+    if (e.code === "Space" || e.which === 32) {
+      e.preventDefault();
+      if (!sustainOn) {
+        sustainOn = true;
+        setSustainIndicator(true);
+      }
+      return;
+    }
     if (e.repeat) return;
     const k = (e.detail || e.which).toString();
-    if (KEY_FREQ[k] && !keyToVoices[k]) playKey(k);
+    if (KEY_FREQ[k]) {
+      // If the key is currently being sustained, release it cleanly
+      // before re-triggering so the user hears a fresh attack.
+      if (sustainedKeys.has(k)) {
+        sustainedKeys.delete(k);
+        releaseKey(k);
+      }
+      if (!keyToVoices[k]) playKey(k);
+    }
   });
+
   window.addEventListener("keyup", (e) => {
+    // Sustain release: cut everything that was deferred.
+    if (e.code === "Space" || e.which === 32) {
+      sustainOn = false;
+      setSustainIndicator(false);
+      // Release every key the user had let go of while pedaling.
+      sustainedKeys.forEach(k => releaseKey(k));
+      sustainedKeys.clear();
+      return;
+    }
     const k = (e.detail || e.which).toString();
-    if (keyToVoices[k]) releaseKey(k);
+    if (keyToVoices[k]) {
+      if (sustainOn) {
+        // Don't actually release — defer until sustain is lifted.
+        sustainedKeys.add(k);
+      } else {
+        releaseKey(k);
+      }
+    }
   });
+
+  // Click-keyboard release also respects sustain.
+  function releaseFromPointer(code) {
+    if (!keyToVoices[code]) return;
+    if (sustainOn) {
+      sustainedKeys.add(code);
+    } else {
+      releaseKey(code);
+    }
+  }
 
   // Build the click-keyboard.
   const kb = $("keyboard");
@@ -762,7 +818,7 @@ document.addEventListener("DOMContentLoaded", () => {
       el.setPointerCapture(e.pointerId);
       if (!keyToVoices[code]) playKey(code);
     });
-    const release = () => { if (keyToVoices[code]) releaseKey(code); };
+    const release = () => releaseFromPointer(code);
     el.addEventListener("pointerup", release);
     el.addEventListener("pointerleave", release);
     el.addEventListener("pointercancel", release);
@@ -975,7 +1031,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const url = URL.createObjectURL(blob);
         const a = document.createElement("a");
         a.href = url;
-        a.download = `probe-${Date.now()}.webm`;
+        a.download = `tonus-${Date.now()}.webm`;
         a.click();
         setTimeout(() => URL.revokeObjectURL(url), 1500);
       };

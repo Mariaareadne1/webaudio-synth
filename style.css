@@ -1,5 +1,5 @@
 /* ============================================================
-   PROBE · model 01 — stylesheet
+   TONUS · model 01 — stylesheet
    Aesthetic: scientific instrument panel. Phosphor green on
    near-black, amber and magenta accents, tick-marked sliders,
    monospaced labels in the typographic register of lab gear.
@@ -917,6 +917,37 @@ kbd {
   text-shadow: 0 0 10px rgba(255,61,139,0.45);
   min-width: 110px;
   display: inline-block;
+}
+
+/* Sustain indicator pill — sits in the kb-head. Dim when off, amber-lit when on. */
+.sustain-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border: 1px solid var(--line-2);
+  background: var(--bg-2);
+  font-size: 9.5px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+  transition: color 160ms ease, border-color 160ms ease, background 160ms ease;
+}
+.sustain-pill .sustain-dot {
+  width: 7px; height: 7px;
+  border-radius: 50%;
+  background: #444;
+  transition: background 160ms ease, box-shadow 160ms ease;
+}
+.sustain-pill.is-on {
+  color: var(--amber);
+  border-color: var(--amber);
+  background: rgba(255, 181, 71, 0.08);
+}
+.sustain-pill.is-on .sustain-dot {
+  background: var(--amber);
+  box-shadow: 0 0 8px var(--amber);
+  animation: heartbeat 1.4s ease-in-out infinite;
 }
 
 /* ============================================================
